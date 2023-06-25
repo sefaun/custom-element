@@ -1,5 +1,5 @@
 ```html
-<sefa-tag></sefa-tag>
+<sefa-select></sefa-select>
 ```
 
 Custom tag create
