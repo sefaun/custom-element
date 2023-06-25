@@ -51,60 +51,33 @@ template.innerHTML = `
   </style>
 
   <div class="dropdown">
-    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+    <input type="text" placeholder="Search.." id="myInput">
     <div id="myDropdown" class="dropdown-content">
-      <div onmousedown="closeDropdown('About')">About</div>
-      <div onmousedown="closeDropdown('Base')">Base</div>
-      <div onmousedown="closeDropdown('Blog')">Blog</div>
-      <div onmousedown="closeDropdown('Contact')">Contact</div>
-      <div onmousedown="closeDropdown('Custom')">Custom</div>
-      <div onmousedown="closeDropdown('Support')">Support</div>
-      <div onmousedown="closeDropdown('Tools')">Tools</div>
+      <div id="myDropdownItem">About</div>
+      <div id="myDropdownItem">Base</div>
+      <div id="myDropdownItem">Blog</div>
+      <div id="myDropdownItem">Contact</div>
+      <div id="myDropdownItem">Custom</div>
+      <div id="myDropdownItem">Support</div>
+      <div id="myDropdownItem">Tools</div>
     </div>
   </div>`
 
 class SefaSelect extends HTMLElement {
 
+  timeout = null
+
   constructor() {
     super()
     const shadow = this.attachShadow({ mode: 'open' })
     shadow.appendChild(template.content.cloneNode(true))
-
-    const script = document.createElement('script')
-    script.textContent = `
-      var timeout = null
-    
-      function closeDropdown(x) {
-        document.getElementById('myInput').value = x
-        document.getElementById("myDropdown").style.display = 'none'
-      }
-      function blur() {console.log(1221)
-        document.getElementById("myDropdown").style.display = 'none'
-      }
-    
-      function focus() {console.log(11)
-        document.getElementById("myDropdown").style.display = 'block'
-      }
-    
-      document.getElementById('myInput').addEventListener('focus', () => {focus()})
-      document.getElementById('myInput').addEventListener('blur', () => {blur()})
-    
-      function filterFunction() {
-        if(timeout!= null) {
-          clearTimeout(timeout)
-          timeout = null
-          
-        }
-          timeout = setTimeout(() => {
-            console.log("asd asd asd asd")
-          }, 500)
-      }`
-
-    shadow.appendChild(script)
   }
 
   connectedCallback() {
-    console.log(this.querySelector('div'))
+    this.shadowRoot.getElementById('myInput').addEventListener('focus', () => this.focus())
+    this.shadowRoot.getElementById('myInput').addEventListener('blur', () => this.blur())
+    this.shadowRoot.getElementById('myInput').addEventListener('keyup', () => this.filterFunction())
+    this.shadowRoot.querySelectorAll('#myDropdownItem').forEach(value => value.addEventListener('mousedown', () => this.closeDropdown(value.textContent)))
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -113,6 +86,30 @@ class SefaSelect extends HTMLElement {
 
   static get observedAttributes() {
     return ["test"] // attribute ismi
+  }
+
+  closeDropdown(x) {
+    this.shadowRoot.getElementById('myInput').value = x
+    this.shadowRoot.getElementById("myDropdown").style.display = 'none'
+  }
+
+  blur() {
+    this.shadowRoot.getElementById("myDropdown").style.display = 'none'
+  }
+
+  focus() {
+    this.shadowRoot.getElementById("myDropdown").style.display = 'block'
+  }
+
+  filterFunction() {
+    if (this.timeout != null) {
+      clearTimeout(this.timeout)
+      this.timeout = null
+
+    }
+    this.timeout = setTimeout(() => {
+      console.log("asd asd asd asd")
+    }, 500)
   }
 
 }
